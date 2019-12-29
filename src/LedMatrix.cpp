@@ -9,7 +9,7 @@
 #define PIN D2
 #define BRIGHTNESS 40
 
-String currentMessage = "...";
+String currentMessage;
 int maxOffset = 0;
 int currentOffset = 0;
 
@@ -25,9 +25,14 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
 
 
 void setMessage(String msg){
-  currentOffset = matrix.width();
   currentMessage = msg;
-  maxOffset = currentMessage.length() * 6;
+  currentOffset = matrix.width();
+  maxOffset = msg.length() * 6;
+  
+  Serial.print("currentmessage=");
+  Serial.println(msg);
+  Serial.print("currentmessage.length=");
+  Serial.println(msg.length());
 }
 
 void setup() {
@@ -40,15 +45,16 @@ void setup() {
 
   matrix.fillScreen(0);
   matrix.setCursor(0, 0);
-  matrix.print("...");
+  matrix.print(".");
   matrix.show();
-  delay(500);
 
   WiFi.begin("36C3-things", "congress2019");
 
   Serial.print("Connecting to WiFi");
   while(WiFi.status() != WL_CONNECTED) { 
-    delay(100);
+    delay(500);
+    matrix.print(".");
+    matrix.show();
     Serial.print(".");
   }
   Serial.println("");
@@ -78,16 +84,11 @@ void loop() {
     Udp.endPacket();
   
     setMessage(String(incomingPacket));
-    Serial.print("currentmessage=");
-    Serial.println(currentMessage);
-    Serial.print("currentmessage.length=");
-    Serial.println(currentMessage.length());
   }
 
   matrix.fillScreen(0);
+  matrix.print(currentMessage.c_str());
   matrix.setCursor(currentOffset, 0);
-  matrix.print(incomingPacket);
-
   currentOffset -= 1;
   if(currentOffset < -maxOffset) { // negative scroll width for message to be out of screen entirely
     currentOffset = matrix.width();
