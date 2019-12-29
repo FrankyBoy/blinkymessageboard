@@ -27,7 +27,7 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
 void setMessage(String msg){
   currentMessage = msg;
   currentOffset = matrix.width();
-  maxOffset = msg.length() * 6;
+  maxOffset = msg.length() * 6; // 6 is font width
   
   Serial.print("currentmessage=");
   Serial.println(msg);
@@ -35,26 +35,34 @@ void setMessage(String msg){
   Serial.println(msg.length());
 }
 
+void waitingDots(){
+  static int wdCounter = 0;
+
+  if(wdCounter++ < 5){
+    matrix.drawPixel(wdCounter * 2 - 2, 7, matrix.Color(255, 0, 0));
+  }else{
+    matrix.clear();
+    wdCounter = 0;
+  }
+  matrix.show();
+}
+
 void setup() {
   Serial.begin(9600);
 
   matrix.begin();
   matrix.setTextWrap(false);
-  matrix.setBrightness(255);
+  matrix.setBrightness(BRIGHTNESS);
   matrix.setTextColor(matrix.Color(255, 0, 0));
 
-  matrix.fillScreen(0);
+  matrix.clear();
   matrix.setCursor(0, 0);
-  matrix.print(".");
-  matrix.show();
 
   WiFi.begin("36C3-things", "congress2019");
-
   Serial.print("Connecting to WiFi");
   while(WiFi.status() != WL_CONNECTED) { 
+    waitingDots();
     delay(500);
-    matrix.print(".");
-    matrix.show();
     Serial.print(".");
   }
   Serial.println("");
@@ -86,7 +94,7 @@ void loop() {
     setMessage(String(incomingPacket));
   }
 
-  matrix.fillScreen(0);
+  matrix.clear();
   matrix.print(currentMessage.c_str());
   matrix.setCursor(currentOffset, 0);
   currentOffset -= 1;
