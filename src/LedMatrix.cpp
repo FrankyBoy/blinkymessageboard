@@ -16,7 +16,7 @@ int currentOffset = 0;
 WiFiServer server(7331);
 WiFiClient client;
 WiFiUDP Udp;
-char incomingPacket[255];
+char incomingPacket[256];
 
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, PIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
@@ -48,7 +48,7 @@ void waitingDots(){
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   matrix.begin();
   matrix.setTextWrap(false);
@@ -77,7 +77,7 @@ void setup() {
  
 void loop() {
   int packetSize = Udp.parsePacket();
-  if (packetSize) {
+  if (packetSize > 0) {
     // receive incoming UDP packets
     Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
     int len = Udp.read(incomingPacket, 255);
