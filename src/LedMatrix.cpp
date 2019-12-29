@@ -102,8 +102,7 @@ void loop() {
     currentOffset = matrix.width();
     matrix.setTextColor(matrix.ColorHSV(
       (uint16)random(0, 65535),
-      (uint8)random(100, 255),
-      BRIGHTNESS));
+      255, 255));
   }
 
   matrix.show();
