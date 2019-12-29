@@ -7,7 +7,7 @@
 #include <WiFiUdp.h>
 
 #define PIN D2
-#define BRIGHTNESS 40
+#define BRIGHTNESS 100
 
 String currentMessage;
 int maxOffset = 0;
@@ -98,17 +98,16 @@ void loop() {
   matrix.print(currentMessage.c_str());
   matrix.setCursor(currentOffset, 0);
   currentOffset -= 1;
+  // calculate new color for next run
   if(currentOffset < -maxOffset) { // negative scroll width for message to be out of screen entirely
     currentOffset = matrix.width();
-    matrix.setTextColor(
-      matrix.gamma32(
-        matrix.ColorHSV(
-          (uint16)random(0, 65535),
-          255,
-          255
-        )
-      )
-    );
+
+    uint16 colorPool = 512;
+    uint8 r, g, b;
+    r = random(255);
+    g = random(255);
+    b = max(0, min(255, colorPool - r - g));
+    matrix.setTextColor(matrix.Color(r, g, b));
   }
 
   matrix.show();
