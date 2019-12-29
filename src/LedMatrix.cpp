@@ -100,9 +100,15 @@ void loop() {
   currentOffset -= 1;
   if(currentOffset < -maxOffset) { // negative scroll width for message to be out of screen entirely
     currentOffset = matrix.width();
-    matrix.setTextColor(matrix.ColorHSV(
-      (uint16)random(0, 65535),
-      255, 255));
+    matrix.setTextColor(
+      matrix.gamma32(
+        matrix.ColorHSV(
+          (uint16)random(0, 65535),
+          255,
+          255
+        )
+      )
+    );
   }
 
   matrix.show();
